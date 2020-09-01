@@ -1,0 +1,37 @@
+#Dropping columns with categorical features
+drop_X_train = X_train.select_dtypes(exclude=['object'])
+drop_X_valid = X_valid.select_dtypes(exclude=['object'])
+
+#Label encoding
+from sklearn.preprocessing import LabelEncoder
+label_encoder = LabelEncoder()
+
+s = (X_train.dtypes == 'object')
+object_cols = list(s[s].index)
+
+for col in object_cols:
+  X_train[col] = label_encoder.fit_transform(X_train[col])
+  X_val[col] = label_encoder.transform(X_val[col])
+
+
+#One-Hot Encoding
+#To use the encoder, we supply only the categorical columns that we want to be one-hot encoded.
+from sklearn.preprocessing import LabelEncoder
+OH_encoder = OneHotEncoder(sparse=False)
+
+OH_cols_train = pd.DataFrame(OH_encoder.fit_transform(X_train[object_cols]))
+OH_cols_val = pd.DataFrame(OH_encoder.transform(X_val[object_cols]))
+
+# One-hot encoding removed index; put it back
+OH_cols_train.index = X_train.index
+OH_cols_val.index = X_val.index
+
+# Remove categorical columns (will replace with one-hot encoding)
+num_X_train = X_train.drop(object_cols, axis=1)
+num_X_val = X_val.drop(object_cols, axis=1)
+
+# Add one-hot encoded columns to numerical features
+OH_X_train = pd.concat([num_X_train, OH_cols_train], axis=1)
+OH_X_val = pd.concat([num_X_val, OH_cols_val], axis=1)
+
+
