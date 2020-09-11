@@ -3,13 +3,13 @@ from sklearn.pipeline import Pipeline
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import OneHotEncoder
 
-categorical_cols = [cname for cname in X_train_full.columns if
-                    X_train_full[cname].nunique() < 10 and 
-                    X_train_full[cname].dtype == "object"]
+categorical_cols = [cname for cname in X_train.columns if
+                    X_train[cname].nunique() < 10 and 
+                    X_train[cname].dtype == "object"]
 
 # Select numerical columns
-numerical_cols = [cname for cname in X_train_full.columns if 
-                X_train_full[cname].dtype in ['int64', 'float64']]
+numerical_cols = [cname for cname in X_train.columns if 
+                X_train[cname].dtype in ['int64', 'float64']]
 
 # Preprocessing for numerical data
 numerical_transformer = SimpleImputer(strategy='constant')
@@ -37,8 +37,8 @@ my_pipeline = Pipeline(steps=[('preprocessor', preprocessor),
 my_pipeline.fit(X_train, y_train)
 
 # Preprocessing of validation data, get predictions
-preds = my_pipeline.predict(X_valid)
+preds = my_pipeline.predict(X_val)
 
 # Evaluate the model
-score = mean_absolute_error(y_valid, preds)
+score = mean_absolute_error(y_val, preds)
 print('MAE:', score)
